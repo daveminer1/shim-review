@@ -255,7 +255,7 @@ Last shim signed for Oracle Solaris was shim 0.9 in 2016.  We have updated GRUB2
 *******************************************************************************
 ### What is the SHA256 hash of your final shim binary?
 *******************************************************************************
-26ddbfb224c1a09368b4e2472de6707a26c3ce26aa00f783620e8fb0b98eec67  shimx64.efi
+b098fb90bff86509aacff0e5bc197583e7e77968cc64da4d41d310fb4eab3087  shimx64.efi
 
 *******************************************************************************
 ### How do you manage and protect the keys used in your shim?
