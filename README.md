@@ -63,7 +63,7 @@ well known in the Linux community.)
 - Name: Alan Coopersmith
 - Position: Sr. Software Architect, Oracle Solaris
 - Email address: alan.coopersmith@oracle.com
-- PGP key fingerprint: 4A19 3C06 D35E 7C67 0FA4  EF0B A2FB 9E08 1F2D 130E
+- PGP key fingerprint: 3AB2 8523 2C46 AE43 D8E1  92F4 DAB0 F78E A6E7 E2D2
 
 alanc.pub
 
