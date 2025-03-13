@@ -167,7 +167,7 @@ Solaris GRUB implements Solaris Verified Boot, which verifies ELF signatures on 
   * CVE-2023-4693
   * CVE-2023-4692
 *******************************************************************************
-Yes, as Solaris will be using the GRUB 2.12 release with this shim.
+Yes, as Solaris is using the GRUB 2.12 release with this shim.
 
 *******************************************************************************
 ### If shim is loading GRUB2 bootloader, and if these fixes have been applied, is the upstream global SBAT generation in your GRUB2 binary set to 4?
@@ -213,7 +213,8 @@ The Oracle Solaris 11.4 kernel and its modules are all signed by the same RSA ke
 ### If you use vendor_db functionality of providing multiple certificates and/or hashes please briefly describe your certificate setup.
 ### If there are allow-listed hashes please provide exact binaries for which hashes are created via file sharing service, available in public with anonymous access for verification.
 *******************************************************************************
-1 EV certificate enrolled in vendor_db, used to sign mmx64, fbx64, and grub2 binaries
+1 Digicert EV certificate enrolled in vendor_db, used to sign mmx64, fbx64, and grub2 binaries
+Additional Oracle Solaris Secure Boot CA enrolled in vendor_db for validation of signatures beginning March/April 2025
 
 *******************************************************************************
 ### If you are re-using the CA certificate from your last shim binary, you will need to add the hashes of the previous GRUB2 binaries exposed to the CVEs mentioned earlier to vendor_dbx in shim. Please describe your strategy.
@@ -221,7 +222,7 @@ This ensures that your new shim+GRUB2 can no longer chainload those older GRUB2 
 
 If this is your first application or you're using a new CA certificate, please say so here.
 *******************************************************************************
-New certificate
+New CA certificate, GRUB2 revocations will be handled by SBAT metadata.
 
 *******************************************************************************
 ### Is the Dockerfile in your repository the recipe for reproducing the building of your shim binary?
@@ -250,18 +251,21 @@ For example, signing new kernel's variants, UKI, systemd-boot, new certs, new CA
 
 Skip this, if this is your first application for having shim signed.
 *******************************************************************************
-Last shim signed for Oracle Solaris was shim 0.9 in 2016.  We have updated GRUB2 from 1.99+patches to GRUB 2.12+ patches.  New certs and CA.
+This change adds the new CA certificate to the shim 15.8 that was reviewed in fall 2024.  No other changes to shim.
 
 *******************************************************************************
 ### What is the SHA256 hash of your final shim binary?
 *******************************************************************************
-b098fb90bff86509aacff0e5bc197583e7e77968cc64da4d41d310fb4eab3087  shimx64.efi
+3baffac5c79b3e37b73fa8cf17cf4216ceeaf54070d2a29d0d8f465bdab4940f  shimx64.efi
 
 *******************************************************************************
 ### How do you manage and protect the keys used in your shim?
 Describe the security strategy that is used for key protection. This can range from using hardware tokens like HSMs or Smartcards, air-gapped vaults, physical safes to other good practices.
 *******************************************************************************
 EV Certificates with private keys stored in HSM
+ 
+
+Private Oracle Solaris SecureBoot CA and signing certificates for signing Oracle Solaris boot chain components after March 2025 have private keys stored in HSM.
 
 *******************************************************************************
 ### Do you use EV certificates as embedded certificates in the shim?
@@ -291,16 +295,16 @@ Skip this, if you're not using GRUB2.
 
 Hint: this is about those modules that are in the binary itself, not the `.mod` files in your filesystem.
 *******************************************************************************
+terminal gfxterm bitmap_scale bitmap font
 video extcmd crypto sleep part_msdos part_gpt
 zfs zfsinfo chain boot mmap serial
 relocator hashsum gcry_crc cat video_fb
-read acpi videoinfo lsmmap terminfo iso9660 fat fshelp iorw lspci
-setpci memrw iorw date datetime time gettext backtrace eval file linux
-progress reboot efi_gop
-search search_label search_fs_uuid search_fs_file boot configfile echo
-btrfs cat chain efifwsetup efinet ext2 fat font gettext gfxmenu help
-gfxterm gzio halt hfsplus iso9660 jpeg keystatus loadenv linux test
-memdisk part_apple part_msdos part_sunpc png sleep multiboot multiboot2 mpi minicmd verified_boot
+read acpi videoinfo lsmmap terminfo iso9660 fat fshelp lspci
+setpci date datetime time gettext backtrace eval file linux
+progress reboot efi_gop search search_label search_fs_uuid search_fs_file boot configfile echo
+btrfs cat chain efifwsetup efinet ext2 fat font gettext gfxmenu help gfxterm
+gzio halt iso9660 jpeg keystatus loadenv linux test memdisk part_apple part_sunpc
+png sleep multiboot multiboot2 mpi verified_boot minicmd
 
 *******************************************************************************
 ### If you are using systemd-boot on arm64 or riscv, is the fix for [unverified Devicetree Blob loading](https://github.com/systemd/systemd/security/advisories/GHSA-6m6p-rjcq-334c) included?
@@ -311,7 +315,16 @@ N/A
 ### What is the origin and full version number of your bootloader (GRUB2 or systemd-boot or other)?
 *******************************************************************************
 GRUB 2.12 plus Oracle patches for Solaris
-The grub2.diff file included shows patches used for GRUB 2.12 on Solaris.  The grub-2.12.tar.gz file is the patched source.
+The grub2.diff file included shows patches used for GRUB 2.12 on Solaris.
+The grub-2.12.tar.gz file is the patched source.
+
+Relative the prior review in fall 2024, GRUB changes include:
+- Updates to ZFS
+- Restored sunpc partition embedding for BIOS partitioning that was in our GRUB 1.99
+- Restored legacy command parsing needed for old BIOS ZFSSA systems
+
+There are no changes to the Verified Boot implementation.
+
 
 *******************************************************************************
 ### If your shim launches any other components apart from your bootloader, please provide further details on what is launched.
